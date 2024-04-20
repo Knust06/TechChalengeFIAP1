@@ -1,10 +1,17 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def get_data_from_url(url):
+    '''Pega o conteúdo de uma página web e retorna o texto dela.'''
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
-    return soup.text  
+    # Extrair todo o texto da página
+    text = soup.get_text()
+    
+    # Limpar quebras de linha, espaços em branco excessivos e tabulações
+    text = re.sub(r'\s+', ' ', text).strip()  # Substitui qualquer sequência de espaços em branco por um espaço único
+    return text 
 
 def get_apresentacao_data():
     return get_data_from_url("http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_01")
