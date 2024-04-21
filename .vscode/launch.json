@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Start API",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": ["main:app", "--reload"],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Test api 1",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/test_api/test1.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
