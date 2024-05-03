@@ -3,13 +3,13 @@ from typing import Optional
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
 from datetime import datetime, timedelta
-from scraper import (get_production_data, get_apresentacao_data, get_processing_data,
-                     get_commercialization_data, get_importation_data, 
-                     get_exportation_data, get_publication_data)
+from scraper import Scraper
 
 SECRET_KEY = "YOUR_SECRET_KEY"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+scraper = Scraper()
 
 app = FastAPI(
     title="Embrapa Data API",
@@ -23,9 +23,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     '''Cria um token de acesso JWT com os dados fornecidos.'''
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(datetime.UTC) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(datetime.UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -39,16 +39,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
          response_description="Dados de produção da viticultura")
 async def production(token: str = Depends(oauth2_scheme)):
     try:
-        data = get_production_data()
-        return {"data": data}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/data/apresentacao", tags=["Data Access"], summary="Acessa dados de apresentação",
-         response_description="Dados de apresentação da viticultura")
-async def apresentacao(token: str = Depends(oauth2_scheme)):
-    try:
-        data = get_apresentacao_data()
+        data = scraper.get_production_data()
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -57,7 +48,7 @@ async def apresentacao(token: str = Depends(oauth2_scheme)):
          response_description="Dados de processamento da viticultura")
 async def processing(token: str = Depends(oauth2_scheme)):
     try:
-        data = get_processing_data()
+        data = scraper.get_processing_data()
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -66,7 +57,7 @@ async def processing(token: str = Depends(oauth2_scheme)):
          response_description="Dados de comercialização da viticultura")
 async def commercialization(token: str = Depends(oauth2_scheme)):
     try:
-        data = get_commercialization_data()
+        data = scraper.get_commercialization_data()
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -75,7 +66,7 @@ async def commercialization(token: str = Depends(oauth2_scheme)):
          response_description="Dados de importação da viticultura")
 async def importation(token: str = Depends(oauth2_scheme)):
     try:
-        data = get_importation_data()
+        data = scraper.get_importation_data()
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -84,16 +75,8 @@ async def importation(token: str = Depends(oauth2_scheme)):
          response_description="Dados de exportação da viticultura")
 async def exportation(token: str = Depends(oauth2_scheme)):
     try:
-        data = get_exportation_data()
+        data = scraper.get_exportation_data()
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/data/publication", tags=["Data Access"], summary="Acessa dados de publicação",
-         response_description="Dados de publicação da viticultura")
-async def publication(token: str = Depends(oauth2_scheme)):
-    try:
-        data = get_publication_data()
-        return {"data": data}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
