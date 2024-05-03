@@ -39,13 +39,23 @@ class Scraper():
             if len(contents)>2:
                 key_1 = contents[0]
                 key_2 = contents[1]
-                key_3 = contents[3]
+                key_3 = contents[2]
                 dict_content = {
                     'ano': year,
                     key_1:[],
                     key_2:[],
                     key_3:[]
                             }
+                contents = contents[3:]
+
+            
+                for i in range(0, len(contents), 3):
+                    dict_content[key_1].append(str(contents[i]))
+                    if i+1 < len(contents):
+                        dict_content[key_2].append(str(contents[i+1]))
+                    if i+2 < len(contents):
+                        dict_content[key_3].append(str(contents[i+2]))
+
             else:
                 key_1 = contents[0]
                 key_2 = contents[1]
@@ -54,15 +64,16 @@ class Scraper():
                     key_1:[],
                     key_2:[]
                             }
-            contents = contents[2:]
-            for i in range(0, len(contents), 2):
-                dict_content[key_1].append(str(contents[i]))
+                contents = contents[2:]
+                for i in range(0, len(contents), 2):
+                    dict_content[key_1].append(str(contents[i]))
 
-            for i in range(1, len(contents), 2):
-                if contents[i] == '-':
-                    dict_content[key_2].append('null')
-                else:
-                    dict_content[key_2].append(str(contents[i]))
+                for i in range(1, len(contents), 2):
+                    if contents[i] == '-':
+                        dict_content[key_2].append('null')
+                    else:
+                        dict_content[key_2].append(str(contents[i]))
+            
 
             return dict_content
     
@@ -122,7 +133,6 @@ class Scraper():
         self.get_years()
         categories = self.get_categories(url)
         dict_content = {}
-        print(categories)
         for num in range(0,len(categories)):
             dict_content.update({categories[num]: []})
             for year in range(self.min_year, self.max_year+1):
@@ -130,7 +140,7 @@ class Scraper():
                 soup = self.get_data_from_url(url)
 
                 dict_content[categories[num]].append(self.get_unique_table_content(soup,year))
-                print(dict_content)
+
 
                 
 
@@ -138,3 +148,4 @@ class Scraper():
 
 scraper = Scraper()
 dict_ = scraper.get_exportation_data()
+print(dict_)
