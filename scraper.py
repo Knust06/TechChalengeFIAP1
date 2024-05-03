@@ -146,6 +146,3 @@ class Scraper():
 
         return dict_content
 
-scraper = Scraper()
-dict_ = scraper.get_exportation_data()
-print(dict_)
