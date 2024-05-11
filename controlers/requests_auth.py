@@ -3,7 +3,7 @@ import requests
 class Autenticacao_Token:
     def __init__(self):
         self.session = requests.Session()
-        self.base_url = "http://127.0.0.1:8000"
+        self.base_url = "http://3.19.56.36:8000"
         self.token_url = f"{self.base_url}/token"
         try:
             self.token_response = self.get_token("teste", "teste")
