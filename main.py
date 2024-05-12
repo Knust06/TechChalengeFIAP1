@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Query
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from scraper import Scraper
 
 SECRET_KEY = "YOUR_SECRET_KEY"
@@ -23,9 +23,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     '''Cria um token de acesso JWT com os dados fornecidos.'''
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.now(datetime.UTC) + expires_delta
+        expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(datetime.UTC) + timedelta(minutes=15)
+        expire = datetime.now(UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -37,45 +37,45 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 @app.get("/data/production", tags=["Data Access"], summary="Acessa dados de produção",
          response_description="Dados de produção da viticultura")
-async def production(token: str = Depends(oauth2_scheme)):
+async def production(year: Optional[int] = Query(None, description="Ano dos dados a serem recuperados"),token: str = Depends(oauth2_scheme)):
     try:
-        data = scraper.get_production_data()
+        data = scraper.get_production_data(year)
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/data/processing", tags=["Data Access"], summary="Acessa dados de processamento",
          response_description="Dados de processamento da viticultura")
-async def processing(token: str = Depends(oauth2_scheme)):
+async def processing(year: Optional[int] = Query(None, description="Ano dos dados a serem recuperados"),token: str = Depends(oauth2_scheme)):
     try:
-        data = scraper.get_processing_data()
+        data = scraper.get_processing_data(year)
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/data/commercialization", tags=["Data Access"], summary="Acessa dados de comercialização",
          response_description="Dados de comercialização da viticultura")
-async def commercialization(token: str = Depends(oauth2_scheme)):
+async def commercialization(year: Optional[int] = Query(None, description="Ano dos dados a serem recuperados"),token: str = Depends(oauth2_scheme)):
     try:
-        data = scraper.get_commercialization_data()
+        data = scraper.get_commercialization_data(year)
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/data/importation", tags=["Data Access"], summary="Acessa dados de importação",
          response_description="Dados de importação da viticultura")
-async def importation(token: str = Depends(oauth2_scheme)):
+async def importation(year: Optional[int] = Query(None, description="Ano dos dados a serem recuperados"),token: str = Depends(oauth2_scheme)):
     try:
-        data = scraper.get_importation_data()
+        data = scraper.get_importation_data(year)
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/data/exportation", tags=["Data Access"], summary="Acessa dados de exportação",
          response_description="Dados de exportação da viticultura")
-async def exportation(token: str = Depends(oauth2_scheme)):
+async def exportation(year: Optional[int] = Query(None, description="Ano dos dados a serem recuperados"),token: str = Depends(oauth2_scheme)):
     try:
-        data = scraper.get_exportation_data()
+        data = scraper.get_exportation_data(year)
         return {"data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

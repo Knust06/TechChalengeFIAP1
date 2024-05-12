@@ -16,6 +16,41 @@
             "request": "launch",
             "program": "${workspaceFolder}/test_api/test1.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Carga exportation_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/carga_dados/carga_exportation.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Carga processing_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/carga_dados/carga_processing.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Carga importation_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/carga_dados/carga_importation.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Carga production_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/carga_dados/carga_production.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Carga commerce_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/carga_dados/carga_commerce.py",
+            "console": "integratedTerminal"
         }
     ]
 }

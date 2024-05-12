@@ -28,8 +28,29 @@ class Scraper():
         soup = self.get_data_from_url(url)
         categories = soup.find_all('button', attrs={'class':'btn_sopt'})
         categories= [category.text for category in categories]
+        
         return categories
 
+    def busca_tabelas(self, soup, year):
+        
+        data = []
+        for row in soup.find('table', class_='tb_base tb_dados').find_all('tr'):
+            cols = row.find_all(['th', 'td'])
+            cols = [col.text.strip() for col in cols]
+            data.append(cols)
+
+        cabe = data.pop(0)
+        dict_teste = {}
+        dict_content = {}
+
+        for item in range(len(data[0])):
+            dict_teste[cabe[item]] = []
+        for item in data:
+            for tam in range(len(item)):
+                dict_teste[cabe[tam]].append(item[tam])
+
+        dict_content[year] = dict_teste
+        return dict_content
 
     def get_unique_table_content(self,soup,year):
             table = soup.find_all('table', attrs={'class': 'tb_base tb_dados'})
@@ -73,62 +94,80 @@ class Scraper():
                         dict_content[key_2].append('null')
                     else:
                         dict_content[key_2].append(str(contents[i]))
-            
 
             return dict_content
     
-    def get_production_data(self):
+    def get_production_data(self, year_form=None):
         self.get_years()
+        dict_content = {}
         for year in range(self.min_year, self.max_year+1):
-            soup = self.get_data_from_url(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_02")
-            dict_content = self.get_unique_table_content(soup,year)
+            if year_form != None:
+                if year == int(year_form):    
+                    soup = self.get_data_from_url(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_02")
+                    dict_content[year] = self.busca_tabelas(soup,year)[year]
+            else:
+                soup = self.get_data_from_url(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_02")
+                dict_content[year] = self.busca_tabelas(soup,year)[year]
+            
         return dict_content
 
-    def get_processing_data(self):
+    def get_processing_data(self, year_form=None):
         url = "http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_03"
         self.get_years()
         categories = self.get_categories(url)
         dict_content = {}
-        print(categories)
         for num in range(0,len(categories)):
             dict_content.update({categories[num]: []})
             for year in range(self.min_year, self.max_year+1):
-                url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_03&subopcao=subopt_0{num+1}"
-                soup = self.get_data_from_url(url)
+                if year_form != None:
+                    if year == int(year_form):
+                        url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_03&subopcao=subopt_0{num+1}"
+                        soup = self.get_data_from_url(url)
+                        dict_content[categories[num]].append(self.busca_tabelas(soup,year))
+                else:
+                    url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_03&subopcao=subopt_0{num+1}"
+                    soup = self.get_data_from_url(url)
+                    dict_content[categories[num]].append(self.busca_tabelas(soup,year))
 
-                dict_content[categories[num]].append(self.get_unique_table_content(soup,year))
-
-                
 
         return dict_content
 
-    def get_commercialization_data(self):
+    def get_commercialization_data(self, year_form=None):
         self.get_years()
+        dict_content = {}
         for year in range(self.min_year, self.max_year+1):
-            soup = self.get_data_from_url(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_04")
-            dict_content = self.get_unique_table_content(soup,year)
-            print(dict_content)
+            if year_form != None:
+                if year == int(year_form):
+                    soup = self.get_data_from_url(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_04")
+                    dict_content[year] = self.busca_tabelas(soup,year)[year]
+            else:
+                soup = self.get_data_from_url(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_04")
+                dict_content[year] = self.busca_tabelas(soup,year)[year]
+
+
         return dict_content
 
-    def get_importation_data(self):
+    def get_importation_data(self, year_form=None):
         url = "http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_05"
         self.get_years()
         categories = self.get_categories(url)
         dict_content = {}
-        print(categories)
         for num in range(0,len(categories)):
             dict_content.update({categories[num]: []})
             for year in range(self.min_year, self.max_year+1):
-                url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_05&subopcao=subopt_0{num+1}"
-                soup = self.get_data_from_url(url)
-
-                dict_content[categories[num]].append(self.get_unique_table_content(soup,year))
-
-                
+                if year_form != None:
+                    if year == int(year_form):
+                        url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_05&subopcao=subopt_0{num+1}"
+                        soup = self.get_data_from_url(url)
+                        dict_content[categories[num]].append(self.busca_tabelas(soup,year))
+                else:
+                    url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_05&subopcao=subopt_0{num+1}"
+                    soup = self.get_data_from_url(url)
+                    dict_content[categories[num]].append(self.busca_tabelas(soup,year))
 
         return dict_content
 
-    def get_exportation_data(self):
+    def get_exportation_data(self, year_form=None):
         url = "http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_06"
         self.get_years()
         categories = self.get_categories(url)
@@ -136,13 +175,15 @@ class Scraper():
         for num in range(0,len(categories)):
             dict_content.update({categories[num]: []})
             for year in range(self.min_year, self.max_year+1):
-                url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_06&subopcao=subopt_0{num+1}"
-                soup = self.get_data_from_url(url)
-
-                dict_content[categories[num]].append(self.get_unique_table_content(soup,year))
-
-
-                
+                if year_form != None:
+                    if year == int(year_form):
+                        url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_06&subopcao=subopt_0{num+1}"
+                        soup = self.get_data_from_url(url)
+                        dict_content[categories[num]].append(self.busca_tabelas(soup,year))
+                else:
+                    url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={year}&opcao=opt_06&subopcao=subopt_0{num+1}"
+                    soup = self.get_data_from_url(url)
+                    dict_content[categories[num]].append(self.busca_tabelas(soup,year))
 
         return dict_content
 
