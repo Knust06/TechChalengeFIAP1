@@ -1,11 +1,11 @@
 from sqlalchemy import create_engine, MetaData, Table, text
 import json
-
+from crypts import descriptogradar
 class DB_utils:
     def __init__(self):
         with open('credential.json', 'r') as arquivo:
             credenciais = json.load(arquivo)
-        self.engine = create_engine(f"postgresql://{credenciais['sql_user']}:{credenciais['sql_pass']}@pg-12909575-fiap-data.k.aivencloud.com:11423/defaultdb?sslmode=require")
+        self.engine = create_engine(f"postgresql://{credenciais['sql_user']}:{descriptogradar(credenciais['fernet'].encode(),credenciais['sql_pass'])}@pg-12909575-fiap-data.k.aivencloud.com:11423/defaultdb?sslmode=require")
         self.connection = self.engine.connect()
         self.metadata = MetaData()
         self.tables = {}
