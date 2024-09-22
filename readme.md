@@ -205,7 +205,7 @@ print(f"Previsão do preço do Bitcoin para amanhã (MLP): {tomorrow_price_nn[0]
 
 ---
 
-##Escolha Modelos 
+## Escolha Modelos 
 
 **Ridge Regression** e **Lasso Regression** são os dois melhores modelo para essas previsão, e aqui estão os motivos:
 
@@ -223,5 +223,6 @@ Lasso Regression, por outro lado, utiliza a regularização L1, que penaliza a s
 
 ---
 
-##Conclusão
+## Conclusão
+
 A escolha entre Ridge e Lasso depende do contexto da análise. Para este teste específico, ambos os modelos demonstraram-se eficazes e robustos, proporcionando boas previsões para o preço do Bitcoin. Enquanto o Ridge é ideal para manter todas as variáveis no modelo, o Lasso oferece uma abordagem mais focada, potencialmente melhor para interpretação. Juntos, eles representam uma forte combinação de técnicas de regressão que podem ser valiosas em diferentes cenários de análise de dados.
