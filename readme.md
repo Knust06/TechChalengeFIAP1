@@ -7,6 +7,8 @@ Este projeto visa prever o preço do Bitcoin utilizando diferentes modelos de ap
 2. [Modelos Utilizados](#modelos-utilizados)
 3. [Otimização de Hiperparâmetros](#otimização-de-hiperparâmetros)
 4. [Avaliação e Resultados](#avaliação-e-resultados)
+5. [Escolha Modelos](#escolha-modelos)
+6. [Conclusão](#conclusão)
 
 ---
 
@@ -199,3 +201,24 @@ print(f"Previsão do preço do Bitcoin para amanhã (Gradient Boosting): {tomorr
 print(f"Previsão do preço do Bitcoin para amanhã (XGBoost): {tomorrow_price_xgb[0]:.2f}")
 print(f"Previsão do preço do Bitcoin para amanhã (MLP): {tomorrow_price_nn[0]:.2f}")
 '''
+```
+---
+##Escolha Modelos 
+
+**Ridge Regression** e **Lasso Regression** são os dois melhores modelo para essas previsão, e aqui estão os motivos:
+
+###Vantagens do Ridge e Lasso
+Regularização: Tanto o Ridge quanto o Lasso utilizam técnicas de regularização que ajudam a prevenir o overfitting, ou seja, quando o modelo se ajusta excessivamente aos dados de treinamento. Isso é crucial em dados financeiros, onde ruídos podem distorcer as previsões.
+
+###Métricas de Desempenho:
+
+Apesar da leve diferença entre os dois, ambos os modelos estão em uma faixa de erro bastante competitiva.
+Embora Ridge e Lasso compartilhem a mesma base teórica de regularização, eles diferem em como aplicam essa regularização:
+
+Ridge Regression utiliza a regularização L2, que adiciona uma penalização proporcional ao quadrado dos coeficientes. Isso significa que o Ridge tende a incluir todas as variáveis no modelo, mas com coeficientes menores. Isso pode ser benéfico quando muitas variáveis têm relevância, pois preserva a informação.
+
+Lasso Regression, por outro lado, utiliza a regularização L1, que penaliza a soma dos valores absolutos dos coeficientes. Isso pode levar a uma seleção de variáveis, onde algumas são reduzidas a zero. O Lasso é, portanto, útil quando se busca um modelo mais simples, com menos variáveis, que ainda consiga manter uma boa precisão nas previsões.
+
+---
+##Conclusão
+A escolha entre Ridge e Lasso depende do contexto da análise. Para este teste específico, ambos os modelos demonstraram-se eficazes e robustos, proporcionando boas previsões para o preço do Bitcoin. Enquanto o Ridge é ideal para manter todas as variáveis no modelo, o Lasso oferece uma abordagem mais focada, potencialmente melhor para interpretação. Juntos, eles representam uma forte combinação de técnicas de regressão que podem ser valiosas em diferentes cenários de análise de dados.
