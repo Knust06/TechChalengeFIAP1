@@ -209,10 +209,10 @@ print(f"Previsão do preço do Bitcoin para amanhã (MLP): {tomorrow_price_nn[0]
 
 **Ridge Regression** e **Lasso Regression** são os dois melhores modelo para essas previsão, e aqui estão os motivos:
 
-###Vantagens do Ridge e Lasso
+### Vantagens do Ridge e Lasso
 Regularização: Tanto o Ridge quanto o Lasso utilizam técnicas de regularização que ajudam a prevenir o overfitting, ou seja, quando o modelo se ajusta excessivamente aos dados de treinamento. Isso é crucial em dados financeiros, onde ruídos podem distorcer as previsões.
 
-###Métricas de Desempenho:
+### Métricas de Desempenho:
 
 Apesar da leve diferença entre os dois, ambos os modelos estão em uma faixa de erro bastante competitiva.
 Embora Ridge e Lasso compartilhem a mesma base teórica de regularização, eles diferem em como aplicam essa regularização:
