@@ -6,10 +6,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 import joblib
 
-# Configurações para coletar os dados de preços da ação VALE3
+# Configurações para coletar os dados de preços do BTC
 symbol = 'BTC-USD'
 start_date = '2013-01-01'
-end_date = '2024-11-01'
+end_date = '2024-11-29'
 
 # Baixar dados históricos da ação
 df = yf.download(symbol, start=start_date, end=end_date)

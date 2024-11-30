@@ -12,13 +12,15 @@ RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.c
     fastapi==0.78.0 uvicorn==0.18.2
 
 RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
-    tensorflow==2.9.1 yfinance==0.1.70
+    tensorflow yfinance==0.1.70
 
 RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
     numpy==1.21.6 scikit-learn==1.0.2
 
 RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
     pydantic==1.9.1 scipy==1.8.1
+
+ENV CUDA_VISIBLE_DEVICES=""
 
 # Copia o restante do código para o container
 COPY . .
