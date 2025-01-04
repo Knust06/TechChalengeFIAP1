@@ -3,7 +3,8 @@ from pydantic import BaseModel
 import tensorflow as tf
 import numpy as np
 import yfinance as yf
-import joblib  # Para carregar o MinMaxScaler salvo
+import joblib
+from datetime import date, datetime, timedelta
 
 # Definir o modelo de dados para entrada
 class StockData(BaseModel):
@@ -33,9 +34,6 @@ async def predict(data: StockData):
         return {"prediction": float(prediction_real)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-hoje = date.today()
-
 
 @app.get("/get-prices")
 async def get_historical_prices(
