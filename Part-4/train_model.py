@@ -9,7 +9,7 @@ import joblib
 # Configurações para coletar os dados de preços do BTC
 symbol = 'BTC-USD'
 start_date = '2013-01-01'
-end_date = '2024-11-29'
+end_date = '2024-12-01'
 
 # Baixar dados históricos da ação
 df = yf.download(symbol, start=start_date, end=end_date)

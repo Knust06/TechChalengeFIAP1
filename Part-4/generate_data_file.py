@@ -3,8 +3,8 @@ import json
 
 # Configurações para coletar os dados de preços doBTC
 symbol = 'BTC-USD'  # Símbolo da ação no Yahoo Finance
-start_date = '2024-01-01'  # Data de início do histórico de preços
-end_date = '2024-11-29'  # Data de fim do histórico de preços
+start_date = '2024-09-09'  # Data de início do histórico de preços
+end_date = '2024-12-09'  # Data de fim do histórico de preços
 
 # Baixa os dados históricos do BTC
 df = yf.download(symbol, start=start_date, end=end_date)
