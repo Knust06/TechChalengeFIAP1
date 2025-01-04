@@ -34,28 +34,53 @@ async def predict(data: StockData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+hoje = date.today()
+
+
 @app.get("/get-prices")
 async def get_historical_prices(
     symbol: str = "BTC-USD",
-    start_date: str = "2024-09-09",
-    end_date: str = "2024-12-09"
+    start_date: str = Query(None),  # Não define default direto, para tratar dinamicamente
+    end_date: str = Query(None)
 ):
     """
-    Faz o download dos preços históricos (coluna 'Close') de um determinado símbolo
-    usando yfinance e retorna em formato JSON.
-    Parâmetros query string (opcionais):
-      - symbol (default BTC-USD)
-      - start_date (default 2024-09-09)
-      - end_date (default 2024-12-09)
-    Exemplo de uso:
-    GET /historical-prices?symbol=BTC-USD&start_date=2024-09-09&end_date=2024-12-09
+    Se o usuário não passar start_date e end_date,
+    por padrão:
+      - start_date = hoje - 60 dias
+      - end_date = hoje
+    Também verifica se o intervalo é >= 60 dias.
     """
+
+    # Se o usuário não informar, define valores padrão
+    if not start_date:
+        start_date = (date.today() - timedelta(days=60)).isoformat()
+    if not end_date:
+        end_date = date.today().isoformat()
+
+    # Converte strings para objeto date
+    fmt = "%Y-%m-%d"
+    try:
+        start_date_obj = datetime.strptime(start_date, fmt).date()
+        end_date_obj = datetime.strptime(end_date, fmt).date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Datas devem estar no formato YYYY-MM-DD.")
+
+    # Verifica se o intervalo é de pelo menos 60 dias
+    diff_days = (end_date_obj - start_date_obj).days
+    if diff_days < 60:
+        raise HTTPException(
+            status_code=400,
+            detail=f"É necessário pelo menos 60 dias de intervalo. Intervalo atual: {diff_days} dias."
+        )
+
+    # Faz o download dos dados de 'Close' via yfinance
     df = yf.download(symbol, start=start_date, end=end_date)
 
     # Verifica se existe a coluna 'Close' e se não está vazia
     if "Close" not in df.columns or df["Close"].empty:
         raise HTTPException(
-            status_code=404, detail=f"Nenhum dado válido encontrado para '{symbol}' nesse intervalo."
+            status_code=404, 
+            detail=f"Nenhum dado válido encontrado para '{symbol}' no intervalo {start_date} a {end_date}."
         )
 
     # Extrai os preços de fechamento, removendo valores ausentes
