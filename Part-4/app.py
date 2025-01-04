@@ -10,6 +10,7 @@ from datetime import date, datetime, timedelta
 class StockData(BaseModel):
     prices: list[float]
 
+
 app = FastAPI()
 model = tf.keras.models.load_model('lstm_model_bitcoin.keras')
 scaler = joblib.load('scaler.save')  # Carrega o scaler usado no treinamento
@@ -95,5 +96,73 @@ async def get_historical_prices(
     # Retorna no formato JSON
     return {"prices": closing_prices}
 
+@app.post("/prices-info")
+async def get_aggregations(data: StockData):
+    """
+Recebe uma lista de preços e retorna agregações úteis, como:
 
-#python -m uvicorn app:app --host 0.0.0.0 --port 8000
+- Média:
+    - Uma métrica que pode nos ajudar a entender a tendência central dos preços ao longo do período analisado.
+
+- Valor mínimo e máximo:
+    - Identifica o menor e o maior valor na lista, permitindo entender os limites de variação do preço.
+
+- Desvio padrão:
+    - Ajuda a compreender a variabilidade dos preços ao longo do tempo, indicando o nível de volatilidade.
+
+- Range (diferença entre máximo e mínimo):
+    - Mede a amplitude de variação dos preços, mostrando o intervalo entre o maior e o menor valor.
+
+- Mediana:
+    - Representa o valor central dos preços ordenados, sendo menos sensível a valores extremos (outliers).
+
+- Preço inicial e final:
+    - Representam os preços no início e no fim do período analisado, fornecendo um panorama do desempenho.
+
+- Retorno total:
+    - Calcula a variação percentual entre o preço inicial e final, indicando o ganho ou perda acumulada.
+
+- Retorno médio diário:
+    - Mede a rentabilidade média diária ao longo do período.
+
+- Volatilidade:
+    - Representa o desvio padrão dos retornos diários, indicando o nível de risco do ativo.
+
+- Momentum:
+    - Mostra a diferença entre o preço atual e o de 10 períodos atrás, indicando a força da tendência recente.
+"""
+    try:
+        prices = data.prices
+
+        if not prices:
+            raise HTTPException(status_code=400, detail="A lista 'prices' não pode estar vazia.")
+
+        # Função de agregação
+        def calculate_aggregations(prices: list[float]) -> dict:
+            daily_returns = [(prices[i] - prices[i-1]) / prices[i-1] for i in range(1, len(prices))]
+            return {
+                "average_price": sum(prices) / len(prices),
+                "min_price": min(prices),
+                "max_price": max(prices),
+                "price_range": max(prices) - min(prices),
+                "std_dev": np.std(prices),
+                "median_price": np.median(prices),
+                "initial_price": prices[0],
+                "final_price": prices[-1],
+                "total_return": ((prices[-1] - prices[0]) / prices[0]) * 100,                
+                "average_daily_return": sum(daily_returns) / len(daily_returns),
+                "volatility": np.std(daily_returns),
+                "momentum": prices[-1] - prices[-10]  # Diferença entre último preço e preço 10 períodos atrás
+            }
+
+        # Calcula as agregações
+        aggregations = calculate_aggregations(prices)
+
+        return {"prices_info": aggregations}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+#python -m uvicorn app:app --host 0.0.0.0 --port 8080
