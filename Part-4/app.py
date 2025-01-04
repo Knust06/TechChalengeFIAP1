@@ -11,7 +11,7 @@ class StockData(BaseModel):
     prices: list[float]
 
 app = FastAPI()
-model = tf.keras.models.load_model('lstm_model_bitcoin.h5')
+model = tf.keras.models.load_model('lstm_model_bitcoin.keras')
 scaler = joblib.load('scaler.save')  # Carrega o scaler usado no treinamento
 
 @app.post("/predict")
