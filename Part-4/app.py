@@ -4,7 +4,9 @@ import tensorflow as tf
 import numpy as np
 import yfinance as yf
 import joblib
+import pandas as pd
 from datetime import date, datetime, timedelta
+from fastapi.middleware.cors import CORSMiddleware
 
 # Definir o modelo de dados para entrada
 class StockData(BaseModel):
@@ -12,10 +14,19 @@ class StockData(BaseModel):
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite todas as origens (ajuste se necessário)
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos os métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos os cabeçalhos
+)
+
 model = tf.keras.models.load_model('lstm_model_bitcoin.keras')
 scaler = joblib.load('scaler.save')  # Carrega o scaler usado no treinamento
 
-@app.post("/predict")
+@app.post("/predict-bitcoin")
 async def predict(data: StockData):
     try:
         # Verifica o número de preços enviados
@@ -97,7 +108,7 @@ async def get_historical_prices(
     return {"prices": closing_prices}
 
 @app.post("/prices-info")
-async def get_aggregations(data: StockData):
+async def get_price_info(data: StockData):
     """
 Recebe uma lista de preços e retorna agregações úteis, como:
 
@@ -164,5 +175,27 @@ Recebe uma lista de preços e retorna agregações úteis, como:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@app.get("/tickers")
+async def get_tickers():
+    """
+    Retorna a lista de tickers brasileiros disponíveis no formato utilizado pelo yfinance.
+    """
+    def obter_tickers_de_repositorio():
+        try:
+            url = "https://raw.githubusercontent.com/leomaurodesenv/b3-stock-indexes/main/output/stock-indexes.csv"
+            df = pd.read_csv(url)
+            tickers = df['Code'].apply(lambda x: f"{x}.SA").tolist()
+            return tickers
+        except Exception as e:
+            raise Exception(f"Erro ao obter tickers: {str(e)}")
+    
+    try:    
+        tickers = obter_tickers_de_repositorio()
+        if not tickers:
+            raise HTTPException(status_code=404, detail="Nenhum ticker encontrado.")
+        return {"tickers": tickers}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 #python -m uvicorn app:app --host 0.0.0.0 --port 8080
