@@ -33,4 +33,41 @@ async def predict(data: StockData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/historical-prices")
+async def get_historical_prices(
+    ticker: str = "BTC-USD",
+    start_date: str = "2024-09-09",
+    end_date: str = "2024-12-09"
+):
+    """
+    Faz o download dos preços históricos (coluna 'Close') de um determinado ticker
+    usando yfinance e retorna no formato JSON.
+    
+    Parâmetros (query):
+      - ticker: símbolo no Yahoo Finance (ex.: BTC-USD, AAPL, PETR4.SA)
+      - start_date: data de início (YYYY-MM-DD)
+      - end_date: data de fim (YYYY-MM-DD)
+    """
+
+    # Faz o download dos dados
+    df = yf.download(ticker, start=start_date, end=end_date)
+
+    # Verifica se existe a coluna 'Close' e se não está vazia
+    if "Close" not in df.columns or df["Close"].empty:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Nenhum dado válido encontrado para o ticker '{ticker}' nesse intervalo."
+        )
+
+    # Extrai os preços de fechamento, removendo valores ausentes
+    closing_prices = [float(price) for price in df["Close"].dropna().values]
+
+    # Retorna no formato JSON
+    return {
+        "ticker": ticker,
+        "start_date": start_date,
+        "end_date": end_date,
+        "prices": closing_prices
+    }
+
 #python -m uvicorn app:app --host 0.0.0.0 --port 8000
