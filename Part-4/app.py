@@ -42,6 +42,14 @@ async def get_historical_prices(
     end_date: str = Query(None)
 ):
     """
+    Faz o download dos preços históricos (coluna 'Close') de um determinado ticker
+    usando yfinance e retorna no formato JSON.
+    
+    Parâmetros (query):
+      - ticker: símbolo no Yahoo Finance (ex.: BTC-USD, AAPL, PETR4.SA)
+      - start_date: data de início (YYYY-MM-DD)
+      - end_date: data de fim (YYYY-MM-DD)
+    
     Se o usuário não passar start_date e end_date,
     por padrão:
       - start_date = hoje - 60 dias
