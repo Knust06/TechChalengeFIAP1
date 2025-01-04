@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import tensorflow as tf
 import numpy as np
+import yfinance as yf
 import joblib  # Para carregar o MinMaxScaler salvo
 
 # Definir o modelo de dados para entrada
@@ -33,41 +34,35 @@ async def predict(data: StockData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/historical-prices")
+@app.get("/get-prices")
 async def get_historical_prices(
-    ticker: str = "BTC-USD",
+    symbol: str = "BTC-USD",
     start_date: str = "2024-09-09",
     end_date: str = "2024-12-09"
 ):
     """
-    Faz o download dos preços históricos (coluna 'Close') de um determinado ticker
-    usando yfinance e retorna no formato JSON.
-    
-    Parâmetros (query):
-      - ticker: símbolo no Yahoo Finance (ex.: BTC-USD, AAPL, PETR4.SA)
-      - start_date: data de início (YYYY-MM-DD)
-      - end_date: data de fim (YYYY-MM-DD)
+    Faz o download dos preços históricos (coluna 'Close') de um determinado símbolo
+    usando yfinance e retorna em formato JSON.
+    Parâmetros query string (opcionais):
+      - symbol (default BTC-USD)
+      - start_date (default 2024-09-09)
+      - end_date (default 2024-12-09)
+    Exemplo de uso:
+    GET /historical-prices?symbol=BTC-USD&start_date=2024-09-09&end_date=2024-12-09
     """
-
-    # Faz o download dos dados
-    df = yf.download(ticker, start=start_date, end=end_date)
+    df = yf.download(symbol, start=start_date, end=end_date)
 
     # Verifica se existe a coluna 'Close' e se não está vazia
     if "Close" not in df.columns or df["Close"].empty:
         raise HTTPException(
-            status_code=404, 
-            detail=f"Nenhum dado válido encontrado para o ticker '{ticker}' nesse intervalo."
+            status_code=404, detail=f"Nenhum dado válido encontrado para '{symbol}' nesse intervalo."
         )
 
     # Extrai os preços de fechamento, removendo valores ausentes
     closing_prices = [float(price) for price in df["Close"].dropna().values]
 
     # Retorna no formato JSON
-    return {
-        "ticker": ticker,
-        "start_date": start_date,
-        "end_date": end_date,
-        "prices": closing_prices
-    }
+    return {"prices": closing_prices}
+
 
 #python -m uvicorn app:app --host 0.0.0.0 --port 8000
