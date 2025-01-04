@@ -117,3 +117,4 @@ if 'Close' in df.columns and not df['Close'].empty:
         mae = mean_absolute_error(y_test_, y_pred)
 else:
     print("Erro: Não foram encontrados dados válidos para a coluna 'Close'.")
+
