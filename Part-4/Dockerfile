@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.c
 RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
     pydantic==1.9.1 scipy==1.8.1
 
+RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
+    pandas==1.5.0 
+
 ENV CUDA_VISIBLE_DEVICES=""
 
 COPY . .
