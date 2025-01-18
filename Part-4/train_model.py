@@ -16,8 +16,8 @@ from tensorflow.keras.optimizers import Adam
 # ==========================
 # Configurações para coletar os dados de preços do BTC
 symbol = 'BTC-USD'
-start_date = '2024-02-01'
-end_date = '2025-01-02'
+start_date = '2015-11-01'
+end_date = '2025-01-17'
 
 # Baixar dados históricos da ação
 df = yf.download(symbol, start=start_date, end=end_date)
