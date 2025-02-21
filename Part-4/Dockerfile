@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.c
     fastapi==0.78.0 uvicorn==0.18.2
 
 RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
-    tensorflow yfinance==0.1.70
+    tensorflow yfinance
 
 RUN pip install --no-cache-dir --default-timeout=100 -i https://mirrors.aliyun.com/pypi/simple/ \
     numpy==1.21.6 scikit-learn==1.0.2
