@@ -92,7 +92,7 @@ async def get_historical_prices(
         )
 
     # Faz o download dos dados de 'Close' via yfinance
-    df = yf.download(symbol, start=start_date, end=end_date)
+    df = yf.download(symbol, start=start_date, end=end_date, interval="1d")
 
     # Verifica se existe a coluna 'Close' e se não está vazia
     if "Close" not in df.columns or df["Close"].empty:
